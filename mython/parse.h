@@ -3,15 +3,18 @@
 #include <memory>
 #include <stdexcept>
 
-namespace parse {
+namespace parse
+{
 class Lexer;
 }
 
-namespace runtime {
+namespace runtime
+{
 class Executable;
 }
 
-struct ParseError : std::runtime_error {
+struct ParseError : std::runtime_error
+{
     using std::runtime_error::runtime_error;
 };
 
