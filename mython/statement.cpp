@@ -31,14 +31,11 @@ ObjectHolder Assignment::Execute(Closure& closure, Context& context)
 }
 
 VariableValue::VariableValue(const std::string& var_name)
-//    :var_name_(var_name)
 {
-    // Переделываем на универсальный алгоритм с использованием вектора
     dotted_ids_.push_back(var_name);
 }
 
 VariableValue::VariableValue(std::vector<std::string> dotted_ids)
-//    :dotted_ids_(std::move(dotted_ids)), var_name_("")
     :dotted_ids_(std::move(dotted_ids))
 {}
 
@@ -46,7 +43,6 @@ ObjectHolder VariableValue::Execute(Closure& closure, [[maybe_unused]] Context& 
 {
 
     // У нас случай цепочки переменных (объектов x.y.z, они же ClassInstance'ы)
-    // Проверим что она не пуста
     if (dotted_ids_.size() > 0)
     {
         runtime::ObjectHolder result;
@@ -86,11 +82,8 @@ ObjectHolder VariableValue::Execute(Closure& closure, [[maybe_unused]] Context& 
 
 unique_ptr<Print> Print::Variable(const std::string& name)
 {
-    // Вычисляем значение переменной
-    //unique_ptr<Statement> name_value_ptr = std::make_unique<VariableValue>(name);
     // Используем конструктор с 1 параметром
     return std::make_unique<Print>(std::make_unique<VariableValue>(name));
-    //return std::make_unique<Print>(name_value_ptr);
 }
 
 Print::Print(unique_ptr<Statement> argument)
@@ -391,7 +384,7 @@ ClassDefinition::ClassDefinition(ObjectHolder cls)
 
 ObjectHolder ClassDefinition::Execute(Closure& closure, [[maybe_unused]] Context& context)
 {
-    // cls_ гарантированно существует, без проверок
+    // cls_ по условию гарантированно существует к этому моменту.
     // Получаем указатель на Class
     auto class_ptr = cls_.TryAs<runtime::Class>();
     // Ищем или создаем в closure класс с таким именем и передаем ему наше определение класса
@@ -561,12 +554,7 @@ ObjectHolder NewInstance::Execute(Closure& closure, Context& context)
         class_instance_.Call(INIT_METHOD, args_values, context);
     }
 
-    // Share() используем если полем класса будет не Class cls_, 
-    // а непосредственно ClassInstance class_instance_
     return runtime::ObjectHolder::Share(class_instance_);
-    // Мы создаем Instance непосредственно в теле Execute(), поэтому
-    // передаем его через Own() + move
-    //return runtime::ObjectHolder::Own(std::move(class_instance_));
 }
 
 MethodBody::MethodBody(std::unique_ptr<Statement>&& body)
