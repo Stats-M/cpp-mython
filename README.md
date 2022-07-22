@@ -13,7 +13,6 @@
 - Smart pointers (unique_ptr, shared_ptr)
 - Class Templates
 - Variadic Templates
-- MS VC 2019 project
 
 ### Инструкция по использованию:
 - примеры вызовов см. в main.cpp
