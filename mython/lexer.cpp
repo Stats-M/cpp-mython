@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <charconv>
-//#include <unordered_map>
 
 using namespace std;
 
@@ -86,18 +85,8 @@ std::ostream& operator<<(std::ostream& os, const Token& rhs)
 
 Lexer::Lexer(std::istream& input) : in_stream_(input)
 {
-    // Инициализируем итератор
-    // Отключено, т.к. вызов парсера теперь производится из конструктора
-    //current_token_it_ = tokens_.begin();
-
     // По заданию требуется разбор входящего потока при создании объекта
     ParseInputStream(input);
-
-    /*
-    // Альтернатива - непосредственный возврат ParseInputStream() итератора
-    // т.к. требуется готовность вектора токенов сразу при создании лексера
-    current_token_it_ = ParseInputStreamEx(input);
-    */
 }
 
 const Token& Lexer::CurrentToken() const
@@ -110,12 +99,10 @@ Token Lexer::NextToken()
 {
     // Последний токен всегда Eof. Дальше него не сдвигаем итератор 
     if ((current_token_it_ + 1) == tokens_.end())
-//    if (current_token_it_ == tokens_.end())
     {
         // Следующего токена нет, это будет уже tokens_.end(). Возвращаем
         // текущий токен Eof, сколько бы ни было запросов NextToken()
         return *current_token_it_;
-        //return token_type::Eof{};
     }
     return *(++current_token_it_);
 }
@@ -145,10 +132,6 @@ void Lexer::ParseInputStream(std::istream& istr)
     // Основной цикл обработки входящего потока
     while (istr)
     {
-        // Отступы перенесены в ParseNewLine()
-        // Здесь это может конфликтовать с пробелами внутри строк
-        //ParseIndent(istr);
-
         ParseString(istr);
         ParseKeywords(istr);
         ParseChars(istr);  // + проверка комментариев внутри
@@ -179,13 +162,6 @@ void Lexer::ParseInputStream(std::istream& istr)
 
 void Lexer::ParseIndent(std::istream& istr)
 {
-    // Проверка на случай конца потока. Флаг eof() устанавливается
-    // при первом неудачном чтении. peek() возвращает -1 при первом
-    // неудачном чтении и -(мусор) при попытке get() при eof()==true
-    // putback() сбрасывает eof() и peek(), но только после 1й попытки
-    // чтения при eof(), иначе peek() зависает с мусором
-
-    // std::char_traits<char>::eof() возвращает константу EOF для типа потока char (==-1)
     if (istr.peek() == std::char_traits<char>::eof())
     {
         return;
@@ -259,13 +235,6 @@ void Lexer::ParseIndent(std::istream& istr)
 
 void Lexer::ParseString(std::istream& istr)
 {
-    // Проверка на случай конца потока. Флаг eof() устанавливается
-    // при первом неудачном чтении. peek() возвращает -1 при первом
-    // неудачном чтении и -(мусор) при попытке get() при eof()==true
-    // putback() сбрасывает eof() и peek(), но только после 1й попытки
-    // чтения при eof(), иначе peek() зависает с мусором
-
-    // std::char_traits<char>::eof() возвращает константу EOF для типа потока char (==-1)
     if (istr.peek() == std::char_traits<char>::eof())
     {
         return;
@@ -279,12 +248,6 @@ void Lexer::ParseString(std::istream& istr)
     {
         char ch;
         std::string result;
-
-        // Альтернативный вариант решения через указатели вместо .get()
-        //auto begin_it = std::istreambuf_iterator<char>(istr);
-        //auto end_it = std::istreambuf_iterator<char>();
-        // Пример использования std::istreambuf_iterator
-        // https://stackoverflow.com/questions/27406789/confused-about-usage-of-stdistreambuf-iterator
 
         // Читаем символы из потока пока не встретим закрывающий символ
         while (istr.get(ch))
@@ -368,13 +331,6 @@ void Lexer::ParseString(std::istream& istr)
 
 void Lexer::ParseKeywords(std::istream& istr)
 {
-    // Проверка на случай конца потока. Флаг eof() устанавливается
-    // при первом неудачном чтении. peek() возвращает -1 при первом
-    // неудачном чтении и -(мусор) при попытке get() при eof()==true
-    // putback() сбрасывает eof() и peek(), но только после 1й попытки
-    // чтения при eof(), иначе peek() зависает с мусором
-
-    // std::char_traits<char>::eof() возвращает константу EOF для типа потока char (==-1)
     if (istr.peek() == std::char_traits<char>::eof())
     {
         return;
@@ -419,13 +375,6 @@ void Lexer::ParseKeywords(std::istream& istr)
 
 void Lexer::ParseChars(std::istream& istr)
 {
-    // Проверка на случай конца потока. Флаг eof() устанавливается
-    // при первом неудачном чтении. peek() возвращает -1 при первом
-    // неудачном чтении и -(мусор) при попытке get() при eof()==true
-    // putback() сбрасывает eof() и peek(), но только после 1й попытки
-    // чтения при eof(), иначе peek() зависает с мусором
-
-    // std::char_traits<char>::eof() возвращает константу EOF для типа потока char (==-1)
     if (istr.peek() == std::char_traits<char>::eof())
     {
         return;
@@ -488,13 +437,6 @@ void Lexer::ParseChars(std::istream& istr)
 
 void Lexer::ParseNumbers(std::istream& istr)
 {
-    // Проверка на случай конца потока. Флаг eof() устанавливается
-    // при первом неудачном чтении. peek() возвращает -1 при первом
-    // неудачном чтении и -(мусор) при попытке get() при eof()==true
-    // putback() сбрасывает eof() и peek(), но только после 1й попытки
-    // чтения при eof(), иначе peek() зависает с мусором
-
-    // std::char_traits<char>::eof() возвращает константу EOF для типа потока char (==-1)
     if (istr.peek() == std::char_traits<char>::eof())
     {
         return;
@@ -534,25 +476,13 @@ void Lexer::ParseNewLine(std::istream& istr)
     {
         istr.get(ch);
 
-        /*
-        // Проверяем случай пустой строки. Пустые строки должны игнорироваться
-        if (!tokens_.empty() &&
-            (tokens_.back().Is<token_type::Indent>() || tokens_.back().Is<token_type::Dedent>()))
-        {
-            // У нас только отступ и перевод строки. Это пустая строка, удаляем Indent/Dedent из вектора
-            tokens_.pop_back();
-        }
-        */
-
         // В векторе токенов может быть только 1 новая строка подряд
-        //if (!tokens_.empty() && tokens_.back() != token_type::Newline{})
         if (!tokens_.empty() && (!tokens_.back().Is<token_type::Newline>()))
         {
             tokens_.emplace_back(token_type::Newline{});
         }
 
-        // Перенесено из ParseInputStream()
-        // Проверка отступа имеет смысл только после перевода строки
+        // Проверка отступа имеет смысл только здесь, после перевода строки
         // В остальных случаях это просто пробелы в середине/конце строки
         ParseIndent(istr);
     }
@@ -577,7 +507,7 @@ void Lexer::ParseComments(std::istream& istr)
             istr.putback('\n');
         }
 
-        // NB. Этот метод не обрабатывает случай перевода строки в комментарии
+        // NB. Этот метод не обрабатывает случай перевода строки в комментариях
         // # comment with \n a newline character in the middle
         // Это будет интерпретировано как новая строка и идентификаторы
     }
