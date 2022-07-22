@@ -148,17 +148,7 @@ ObjectHolder ClassInstance::Call(const std::string& method,
         }
         // Итого локальная closure содержит все аргументы плюс ссылка на self для доступа к fields_
 
-        //method_ptr->body->Execute(fields_, context); // Closure тут нужно передавать дополненную локальную
         return method_ptr->body->Execute(closure, context);
-
-        // Дополительная информация:
-        // Метод - структура, содержащая std::unique_ptr<Executable> body, и вызов метода 
-        // эквивалентен вызову body->Execute(closure, context), т.е. ему нужно скормить некую 
-        // Closure. Closure из ClassInstance содержит только поля, к ним доступ будет 
-        // через self - это особенность Питона, если просто подать на вход метода поля, 
-        // то это не сработает. Но помимо полей нам нужны еще и аргументы, которые могут 
-        // не зависеть от полей вообще и сам экземпляр класса про них знать не должен. 
-        // Поэтому Closure здесь нужна своя.
     }
     else
     {
@@ -225,15 +215,12 @@ void Bool::Print(std::ostream& os, [[maybe_unused]] Context& context)
 bool Equal(const ObjectHolder& lhs, const ObjectHolder& rhs, Context& context)
 {
     // 1. Если lhs и rhs имеют значение None, функция возвращает true.
-    // operator bool() проверяет внутренний shared_ptr на != nullptr
-    // Значение None противоположно оператору bool()
     if (!lhs && !rhs)
     {
         return true;
     }
 
     // 2. Возвращает true, если lhs и rhs содержат одинаковые числа, строки или значения типа Bool.
-    // Проверяем Value-типы Mython. У нас это наследники класса ValueObject<T>
     {
         auto lhs_ptr = lhs.TryAs<Number>();
         auto rhs_ptr = rhs.TryAs<Number>();
@@ -287,7 +274,6 @@ bool Less(const ObjectHolder& lhs, const ObjectHolder& rhs, Context& context)
 {
     // 1. Если lhs и rhs - числа, строки или значения bool, функция
     // возвращает результат их сравнения оператором <
-    // Проверяем Value-типы Mython. У нас это наследники класса ValueObject<T>
     {
         auto lhs_ptr = lhs.TryAs<Number>();
         auto rhs_ptr = rhs.TryAs<Number>();
