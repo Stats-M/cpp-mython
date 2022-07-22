@@ -44,65 +44,6 @@ VariableValue::VariableValue(std::vector<std::string> dotted_ids)
 
 ObjectHolder VariableValue::Execute(Closure& closure, [[maybe_unused]] Context& context)
 {
-    /* ЭТА СЕКЦИЯ НЕ РАБОТАЕТ, ОБЪЕДИНЕНА С СЕКЦИЕЙ -ELSE-
-    if (var_name_.size() > 0)
-    {
-        // У нас случай единственной переменной (один ClassInstance)
-        if (closure.find(var_name_) != closure.end())
-        {
-            return closure.at(var_name_);
-        }
-        // Если в closure не var_name_, то это ошибка
-        throw std::runtime_error("Invalid argument name in VariableValue::Execute()"s);
-    }
-    else
-    */ // КОНЕЦ ОТКЛЮЧЕННОЙ СЕКЦИИ
-
-    /* НЕПРАВИЛЬНАЯ ЛОГИКА МЕТОДА. ПЕРЕДЕЛАТЬ.
-    {
-        // У нас случай цепочки переменных (объектов x.y.z, они же ClassInstance'ы)
-        // Проверим что она не пуста
-        if (dotted_ids_.size() > 0)
-        {
-            // Цепочки содержат вложенные closure. Запоминаем текущую
-            Closure& current_closure = closure;
-
-            for (const auto& arg : dotted_ids_)
-            {
-                // Ищем очередной аргумент в текущем словаре closure
-                auto arg_it = current_closure.find(arg);
-                if (arg_it == current_closure.end())
-                {
-                    throw std::runtime_error("Invalid argument name in VariableValue::Execute()"s);
-                }
-
-                // Аргумент найден. Проверяем, тип соответствующего ему значения в текущем словаре current_closure
-                auto next_dotted_arg_ptr = arg_it->second.TryAs<runtime::ClassInstance>();
-                // Если тип значения - НЕ объект (ClassInstance), то это конец цепочки 
-                // (конец вложенных closure) и это и есть значение, которое требуется вернуть
-                if (next_dotted_arg_ptr == nullptr)
-                {
-                    return arg_it->second;
-                }
-
-                // В противном случае продолжаем раскручивать цепочку
-                // Получаем ссылку на вложенный closure (словарь полей)
-                current_closure = next_dotted_arg_ptr->Fields();
-            }
-
-            // Если мы здесь, то цепочка закончислась, но последний элемент цепочки
-            // не содержал значение переменной, а был объектом. Ошибка? Или вернуть None?
-            //return arg_it->second;
-            //throw std::runtime_error("Last argument in VariableValue::Execute() has no value"s);
-            return {};
-        }
-    }
-
-    // Во всех других случаях выбрасываем исключение
-    throw std::runtime_error("No arguments specified for VariableValue::Execute()"s);
-    */ // КОНЕЦ ОШИБОЧНОГО МЕТОДА
-
-
 
     // У нас случай цепочки переменных (объектов x.y.z, они же ClassInstance'ы)
     // Проверим что она не пуста
