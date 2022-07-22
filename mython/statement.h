@@ -61,7 +61,6 @@ public:
     runtime::ObjectHolder Execute(runtime::Closure& closure, [[maybe_unused]] runtime::Context& context) override;
 
 private:
-    //const std::string& var_name_;
     std::vector<std::string> dotted_ids_{};
 };
 
